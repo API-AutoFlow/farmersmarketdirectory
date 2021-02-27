@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+  <style>
+    body {
+      font-family: Arial;
+    }
+
+    .split {
+      height: 100%;
+      position: fixed;
+      z-index: 1;
+      top: 0;
+      overflow-x: hidden;
+      padding: 20px;
+    }
+
+    .left {
+      left: 0;
+      width: 40%;
+    }
+
+    .right {
+      right: 0;
+      width: 60%;
+    }
+
+    p {
+      white-space: pre-line;
+    }
+    button{
+      min-width: 250px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="split left">
+      <p>Search the nearest Farmers Market</p>
+      <input value="94089" id="get-correlated-list-input" type="text" name="name" placeholder="US Zip Code such as 94089" required></input><br />
+      <button type="button" onclick="getData('correlated-filtered', 'zip')">View Correlated + Filtered Data</button>
+
+      <button type="button" onclick="getCorrelatedFilteredTable('correlated-filtered', 'zip')">View Correlated + Filtered Data</button><br />
+      <button type="button" onclick="getData('correlated', 'zip')">View Correlated Data</button>
+      <button type="button" onclick="getCorrelatedTable('correlated', 'zip')">View Correlated Data</button><br />
+      <button type="button" onclick="getData('raw', 'zip')">View Raw Data (Market ID Only)</button>
+      <button type="button" onclick="getRawTable('raw', 'zip')">View Raw Data (Market ID Only)</button>
+      <p>View Raw Data (Detailed information about a Market)</p>
+      <input value="1020184" id="get-details-input" type="text" name="name" placeholder="Market ID such as 1020185" required></input>
+      <button type="button" onclick="getData('detail', 'id')">View Raw Data (Detailed information about a Market)</button>
+  </div>
+
+  <div class="split right">
+      <p id="loading"></p>
+      <pre id="result"></pre>
+      <table id="tbody" class="table">
+      </table>
+  </div>
+  </div>
+</body>
+
+</html>
+
+<script>
+  var baseUrl = "http://localhost:1111"
+
+
+
+  /* JSON Output */
+  function getData(uri, queryType) {
+    document.getElementById("tbody", "result").innerHTML = "";
+    var zipcode = document.getElementById("get-correlated-list-input").value;
+    var id = document.getElementById("get-details-input").value;
+    xhr.onreadystatechange = function() {
+      var data = JSON.parse(this.responseText);
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("loading").innerHTML = "";
+        document.getElementById("result").innerHTML = JSON.stringify(data, undefined, 2);
+      } else {
+        document.getElementById("loading").innerHTML = "Loading...";
+      }
+    };
+    if (zipcode.length >= 0) {
+      xhr.open("GET", baseUrl + "/" + uri + "?" + queryType + "=" + zipcode, true);
+    } else {
+      xhr.open("GET", baseUrl + "/" + uri + "?" + queryType + "=" + +id, true);
+    }
+    xhr.send();
+  }
+
+  /* Tables Output */
+  function getCorrelatedFilteredTable(uri, queryType) {
+    document.getElementById("tbody", "result").innerHTML = "";
+    var zipcode = document.getElementById("get-correlated-list-input").value;
+    xhr.onreadystatechange = function() {
+      // console.log(this.responseText);
+      var data = JSON.parse(this.responseText);
+      console.log(data);
+      var obj = data;
+      if (this.readyState == 4 && this.status == 200) {
+        var globalCounter = 0;
+        var tbody = document.getElementById('tbody');
+        var tr = "<tr>";
+        tr += "<th>Name</th>";
+        tr += "<th>Address</th>";
+        tr += "<th>Distance</th>";
+        tr += "</tr>";
+        for (var i = 0; i < Object.keys(obj).length; i++) {
+          tr += "<tr>";
+          if (obj[i].toString().substring(obj[i].toString().indexOf('.'), obj[i].toString().length) < 2) obj[i] += "0";
+          tr += "<td>" + obj[i]["name"] + "</td>" + "<td>" + obj[i]["address"] + "</td>" + "<td>" + obj[i]["distance"] + "</td></tr>";
+          console.log(tr);
+        }
+        document.getElementById("loading").innerHTML = "";
+        tbody.innerHTML += tr;
+      } else {
+        document.getElementById("loading").innerHTML = "Loading...";
+      }
+    };
+    console.log(baseUrl + "/" + uri + "?" + queryType + "=" + zipcode);
+    xhr.open("GET", baseUrl + "/" + uri + "?" + queryType + "=" + zipcode, true);
+    xhr.send();
+  }
+
+  function getCorrelatedTable(uri, queryType) {
+    document.getElementById("tbody", "result").innerHTML = "";
+    var zipcode = document.getElementById("get-correlated-list-input").value;
+    xhr.onreadystatechange = function() {
+      // console.log(this.responseText);
+      var data = JSON.parse(this.responseText);
+      console.log(data);
+      var obj = data;
+      if (this.readyState == 4 && this.status == 200) {
+        var globalCounter = 0;
+        var tbody = document.getElementById('tbody');
+        var tr = "<tr>";
+        tr += "<th>Address</th>";
+        tr += "<th>Products</th>";
+        tr += "<th>Schedule</th>";
+        tr += "<th>GoogleLink</th>";
+        tr += "</tr>";
+        for (var i = 0; i < Object.keys(obj).length; i++) {
+          tr += "<tr>";
+          if (obj[i].toString().substring(obj[i].toString().indexOf('.'), obj[i].toString().length) < 2) obj[i] += "0";
+          tr += "<td>" + obj[i]["marketdetails"]["Address"] + "</td>" + "</td>" + "<td>" + obj[i]["marketdetails"]["Products"] + "</td>" + "<td>" + obj[i]["marketdetails"]["Schedule"] + "<td>" + obj[i]["marketdetails"]["GoogleLink"] + "</td></tr>";
+          console.log(tr);
+        }
+        document.getElementById("loading").innerHTML = "";
+        tbody.innerHTML += tr;
+      } else {
+        document.getElementById("loading").innerHTML = "Loading...";
+      }
+    };
+    console.log(baseUrl + "/" + uri + "?" + queryType + "=" + zipcode);
+    xhr.open("GET", baseUrl + "/" + uri + "?" + queryType + "=" + zipcode, true);
+    xhr.send();
+  }
+
+  function getRawTable(uri, queryType) {
+    document.getElementById("tbody", "result").innerHTML = "";
+    var zipcode = document.getElementById("get-correlated-list-input").value;
+    xhr.onreadystatechange = function() {
+      // console.log(this.responseText);
+      var data = JSON.parse(this.responseText);
+      console.log(data);
+      var obj = data["results"];
+      if (this.readyState == 4 && this.status == 200) {
+        var globalCounter = 0;
+        var tbody = document.getElementById('tbody');
+        var tr = "<tr>";
+        tr += "<th>ID</th>";
+        tr += "<th>Market Name</th>";
+        tr += "</tr>";
+        for (var i = 0; i < Object.keys(obj).length; i++) {
+          tr += "<tr>";
+          if (obj[i].toString().substring(obj[i].toString().indexOf('.'), obj[i].toString().length) < 2) obj[i] += "0";
+          tr += "<td>" + obj[i]["id"] + "</td>" + "<td>" + JSON.stringify(obj[i]["marketname"]).toString() + "</td></tr>";
+          console.log(tr);
+        }
+        document.getElementById("loading").innerHTML = "";
+        tbody.innerHTML += tr;
+      } else {
+        document.getElementById("loading").innerHTML = "Loading...";
+      }
+    };
+    console.log(baseUrl + "/" + uri + "?" + queryType + "=" + zipcode);
+    xhr.open("GET", baseUrl + "/" + uri + "?" + queryType + "=" + zipcode, true);
+    xhr.send();
+  }
+  // API Calls
+  const xhr = new XMLHttpRequest();
+</script>
