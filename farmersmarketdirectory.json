@@ -1,1 +1,820 @@
-{"$product":{"name":"API AutoFlow","version":"1.0.2"},"Data":[],"File":[],"Flow":[],"FlowTest":[],"Inbound":[{"id":"<1601490802058764000.0.4049359294.2744909831.232717>","meta":{},"value":{"name":"Farmers Market","port":1111,"tls":false,"type":"http server"}}],"InboundEndpoint":[{"id":"<1601490814451709000.0.4049359294.2744909830.231927>","meta":{"index":["inbound","<1601490802058764000.0.4049359294.2744909831.232717>"]},"value":{"default-test":"<1601490814451934000.0.4049359294.2744909830.231941>","methods":["GET"],"name":"get list","path":"/","serve-files":null,"type":"endpoint"}}],"InboundEndpointFlow":[{"id":"<1601490814451709000.0.4049359294.2744909830.231927>","meta":{"index":["inbound","<1601490802058764000.0.4049359294.2744909831.232717>"]},"value":[{"$action":"string/join","array":["https://search.ams.usda.gov/farmersmarkets/v1/data.svc/zipSearch?zip=",{"__LDATA__":["request","query","zip"]}],"output-location":{"__LDATA__":["url_market_list"]},"separator":""},{"$action":"communication/http-request","body":"","header":{},"method":"GET","mock-result":{"body":"","header":{},"status-code":200},"name":"Get market list","output-location":{"__LDATA__":["market_list"]},"query":{},"timeout":5000,"url":{"__LDATA__":["url_market_list"]},"use-mock-result":false},{"$action":"json/decode","json":{"__LDATA__":["market_list","body"]},"name":"Decode Market List JSON","output-location":{"__LDATA__":["market_list_decoded"]}},{"$action":"data/set","at-location":{"__LDATA__":["market_details"]},"name":"Create Empty Array","value":[]},{"$action":"iteration/for-each","array":{"__LDATA__":["market_list_decoded","results"]},"do":[{"$action":"string/join","array":["https://search.ams.usda.gov/farmersmarkets/v1/data.svc/mktDetail?id=",{"__LDATA__":["value","id"]}],"name":"Prep URL with Variable market ID","output-location":{"__LDATA__":["market_url"]},"separator":""},{"$action":"communication/http-request","body":"","header":{},"method":"GET","mock-result":{"body":"","header":{},"status-code":200},"name":"Get Market Details","output-location":{"__LDATA__":["market_info"]},"query":{},"timeout":5000,"url":{"__LDATA__":["market_url"]},"use-mock-result":false},{"$action":"json/decode","json":{"__LDATA__":["market_info","body"]},"name":"Decode Market Detail JSON","output-location":{"__LDATA__":["market_info_decoded"]}},{"$action":"array/insert-at","array":{"__LDATA__":["market_details"]},"index":-1,"name":"Insert Market Details in an Array","output-location":{"__LDATA__":["market_details"]},"value":{"address":{"__LDATA__":["market_info_decoded","marketdetails","Address"]},"name":{"__LDATA__":["value","marketname"]}}}],"index-location":{"__LDATA__":["index"]},"name":"Iterate over Market List","value-location":{"__LDATA__":["value"]}},{"$action":"data/set","at-location":{"__LDATA__":["response","body"]},"name":"Set to ResponseBody","value":{"__LDATA__":["market_details"]}}]}],"InboundEndpointTest":[{"id":"<1601490814451934000.0.4049359294.2744909830.231941>","meta":{"index":["inbound","<1601490802058764000.0.4049359294.2744909831.232717>","endpoint","<1601490814451709000.0.4049359294.2744909830.231927>"]},"value":{"name":"default-test-input","request":{"body":"","header":{},"path":{},"query":{"zip":"95070"}}}}],"Schema":[],"SchemaEntry":[],"Timer":[],"TimerFlow":[],"Variable":[]}
+{
+  "$product": {
+    "name": "API AutoFlow",
+    "version": "1.0.29"
+  },
+  "Inbound": [
+    {
+      "id": "a8c1e9bc-1ad2-41ab-b44f-c5beca0a74aa",
+      "meta": {},
+      "value": {
+        "access-control-allow-headers": "*",
+        "access-control-allow-methods": "*",
+        "access-control-allow-origin": "*",
+        "name": "Farmers Market",
+        "port": 1111,
+        "tls": false,
+        "type": "http server"
+      }
+    }
+  ],
+  "InboundEndpoint": [
+    {
+      "id": "72df78a6-5da9-4642-a4dc-d6037a4da75b",
+      "meta": {
+        "index": [
+          "inbound",
+          "a8c1e9bc-1ad2-41ab-b44f-c5beca0a74aa"
+        ]
+      },
+      "value": {
+        "default-test": "ef3fd576-bac4-4f20-b255-10b41b63e694",
+        "methods": [
+          "GET"
+        ],
+        "name": "Correlated Filtered",
+        "path": "/correlated-filtered",
+        "serve-files": null,
+        "type": "endpoint"
+      }
+    },
+    {
+      "id": "05bd1909-8949-456d-ab18-ea5fa5ce1597",
+      "meta": {
+        "index": [
+          "inbound",
+          "a8c1e9bc-1ad2-41ab-b44f-c5beca0a74aa"
+        ]
+      },
+      "value": {
+        "default-test": "aae90200-c870-4a13-8a3b-b4c09f446258",
+        "methods": [
+          "GET"
+        ],
+        "name": "Correlated",
+        "path": "/correlated",
+        "type": "endpoint"
+      }
+    },
+    {
+      "id": "1c17bed9-b54c-4582-b6cb-304536926e18",
+      "meta": {
+        "index": [
+          "inbound",
+          "a8c1e9bc-1ad2-41ab-b44f-c5beca0a74aa"
+        ]
+      },
+      "value": {
+        "default-test": "4ae028d1-3062-4fa4-922a-f342d0795480",
+        "methods": [
+          "GET"
+        ],
+        "name": "Raw Detail",
+        "path": "/detail",
+        "type": "endpoint"
+      }
+    },
+    {
+      "id": "c46f6c13-395c-4ec3-a154-181a095e7436",
+      "meta": {
+        "index": [
+          "inbound",
+          "a8c1e9bc-1ad2-41ab-b44f-c5beca0a74aa"
+        ]
+      },
+      "value": {
+        "default-test": "86b01cc4-10a3-461e-a695-58fa7ea71d32",
+        "methods": [
+          "GET"
+        ],
+        "name": "Raw Data",
+        "path": "/raw",
+        "type": "endpoint"
+      }
+    }
+  ],
+  "InboundEndpointFlow": [
+    {
+      "id": "72df78a6-5da9-4642-a4dc-d6037a4da75b",
+      "meta": {
+        "index": [
+          "inbound",
+          "a8c1e9bc-1ad2-41ab-b44f-c5beca0a74aa"
+        ]
+      },
+      "value": [
+        {
+          "$action": "string/join",
+          "array": [
+            "https://search.ams.usda.gov/farmersmarkets/v1/data.svc/zipSearch?zip=",
+            {
+              "__LDATA__": [
+                "request",
+                "query",
+                "zip"
+              ]
+            }
+          ],
+          "output-location": {
+            "__LDATA__": [
+              "url_market_list"
+            ]
+          },
+          "separator": ""
+        },
+        {
+          "$action": "communication/http-request",
+          "body": "",
+          "header": {},
+          "method": "GET",
+          "mock-result": {
+            "body": "",
+            "header": {},
+            "status-code": 200
+          },
+          "name": "Get market list",
+          "output-location": {
+            "__LDATA__": [
+              "market_list"
+            ]
+          },
+          "query": {},
+          "timeout": 5000,
+          "url": {
+            "__LDATA__": [
+              "url_market_list"
+            ]
+          },
+          "use-mock-result": false
+        },
+        {
+          "$action": "json/decode",
+          "json": {
+            "__LDATA__": [
+              "market_list",
+              "body"
+            ]
+          },
+          "name": "Decode Market List JSON",
+          "output-location": {
+            "__$afref__": "data",
+            "path": [
+              "market_list"
+            ]
+          }
+        },
+        {
+          "$action": "data/set",
+          "at-location": {
+            "__LDATA__": [
+              "market_details"
+            ]
+          },
+          "name": "Create Empty Array",
+          "value": []
+        },
+        {
+          "$action": "iteration/for-each",
+          "array": {
+            "__$afref__": "data",
+            "path": [
+              "market_list",
+              "results"
+            ]
+          },
+          "do": [
+            {
+              "$action": "string/join",
+              "array": [
+                "https://search.ams.usda.gov/farmersmarkets/v1/data.svc/mktDetail?id=",
+                {
+                  "__LDATA__": [
+                    "value",
+                    "id"
+                  ]
+                }
+              ],
+              "name": "Prep URL with Variable market ID",
+              "output-location": {
+                "__LDATA__": [
+                  "market_url"
+                ]
+              },
+              "separator": ""
+            },
+            {
+              "$action": "communication/http-request",
+              "body": "",
+              "header": {},
+              "method": "GET",
+              "mock-result": {
+                "body": "",
+                "header": {},
+                "status-code": 200
+              },
+              "name": "Get Market Details",
+              "output-location": {
+                "__LDATA__": [
+                  "market_info"
+                ]
+              },
+              "query": {},
+              "timeout": 5000,
+              "url": {
+                "__LDATA__": [
+                  "market_url"
+                ]
+              },
+              "use-mock-result": false
+            },
+            {
+              "$action": "json/decode",
+              "json": {
+                "__LDATA__": [
+                  "market_info",
+                  "body"
+                ]
+              },
+              "name": "Decode Market Detail JSON",
+              "output-location": {
+                "__LDATA__": [
+                  "market_info_decoded"
+                ]
+              }
+            },
+            {
+              "$action": "string/split",
+              "output-location": {
+                "__$afref__": "data",
+                "path": [
+                  "value",
+                  "marketname"
+                ]
+              },
+              "string": {
+                "__$afref__": "data",
+                "path": [
+                  "value",
+                  "marketname"
+                ]
+              }
+            },
+            {
+              "$action": "string/join",
+              "array": [
+                {
+                  "__$afref__": "data",
+                  "path": [
+                    "value",
+                    "marketname",
+                    0
+                  ]
+                },
+                " mi."
+              ],
+              "output-location": {
+                "__$afref__": "data",
+                "path": [
+                  "value",
+                  "distance"
+                ]
+              },
+              "separator": ""
+            },
+            {
+              "$action": "array/drop",
+              "array": {
+                "__$afref__": "data",
+                "path": [
+                  "value",
+                  "marketname"
+                ]
+              },
+              "count": 1,
+              "output-location": {
+                "__$afref__": "data",
+                "path": [
+                  "value",
+                  "marketname"
+                ]
+              }
+            },
+            {
+              "$action": "array/join",
+              "array": {
+                "__$afref__": "data",
+                "path": [
+                  "value",
+                  "marketname"
+                ]
+              },
+              "output-location": {
+                "__$afref__": "data",
+                "path": [
+                  "value",
+                  "marketname"
+                ]
+              },
+              "separator": ""
+            },
+            {
+              "$action": "array/insert-at",
+              "array": {
+                "__LDATA__": [
+                  "market_details"
+                ]
+              },
+              "index": 0,
+              "name": "Insert Market Details in an Array",
+              "output-location": {
+                "__LDATA__": [
+                  "market_details"
+                ]
+              },
+              "value": {
+                "address": {
+                  "__LDATA__": [
+                    "market_info_decoded",
+                    "marketdetails",
+                    "Address"
+                  ]
+                },
+                "distance": {
+                  "__$afref__": "data",
+                  "path": [
+                    "value",
+                    "distance"
+                  ]
+                },
+                "name": {
+                  "__LDATA__": [
+                    "value",
+                    "marketname"
+                  ]
+                }
+              }
+            }
+          ],
+          "index-location": {
+            "__LDATA__": [
+              "index"
+            ]
+          },
+          "name": "Iterate over Market List",
+          "value-location": {
+            "__LDATA__": [
+              "value"
+            ]
+          }
+        },
+        {
+          "$action": "data/set",
+          "at-location": {
+            "__$afref__": "data",
+            "path": [
+              "result"
+            ]
+          },
+          "name": "Set to ResponseBody",
+          "value": {
+            "__LDATA__": [
+              "market_details"
+            ]
+          }
+        },
+        {
+          "$action": "json/encode",
+          "data": {
+            "__$afref__": "data",
+            "path": [
+              "result"
+            ]
+          },
+          "output-location": {
+            "__$afref__": "data",
+            "path": [
+              "response",
+              "body"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "05bd1909-8949-456d-ab18-ea5fa5ce1597",
+      "meta": {
+        "index": [
+          "inbound",
+          "a8c1e9bc-1ad2-41ab-b44f-c5beca0a74aa"
+        ]
+      },
+      "value": [
+        {
+          "$action": "string/join",
+          "array": [
+            "https://search.ams.usda.gov/farmersmarkets/v1/data.svc/zipSearch?zip=",
+            {
+              "__LDATA__": [
+                "request",
+                "query",
+                "zip"
+              ]
+            }
+          ],
+          "output-location": {
+            "__LDATA__": [
+              "url_market_list"
+            ]
+          },
+          "separator": ""
+        },
+        {
+          "$action": "communication/http-request",
+          "body": "",
+          "header": {},
+          "method": "GET",
+          "mock-result": {
+            "body": "",
+            "header": {},
+            "status-code": 200
+          },
+          "name": "Get market list",
+          "output-location": {
+            "__LDATA__": [
+              "market_list"
+            ]
+          },
+          "query": {},
+          "timeout": 5000,
+          "url": {
+            "__LDATA__": [
+              "url_market_list"
+            ]
+          },
+          "use-mock-result": false
+        },
+        {
+          "$action": "json/decode",
+          "json": {
+            "__LDATA__": [
+              "market_list",
+              "body"
+            ]
+          },
+          "name": "Decode Market List JSON",
+          "output-location": {
+            "__$afref__": "data",
+            "path": [
+              "market_list"
+            ]
+          }
+        },
+        {
+          "$action": "iteration/map",
+          "array": {
+            "__$afref__": "data",
+            "path": [
+              "market_list",
+              "results"
+            ]
+          },
+          "do": [
+            {
+              "$action": "string/join",
+              "array": [
+                "https://search.ams.usda.gov/farmersmarkets/v1/data.svc/mktDetail?id=",
+                {
+                  "__LDATA__": [
+                    "value",
+                    "id"
+                  ]
+                }
+              ],
+              "name": "Prep URL with Variable market ID",
+              "output-location": {
+                "__LDATA__": [
+                  "market_url"
+                ]
+              },
+              "separator": ""
+            },
+            {
+              "$action": "communication/http-request",
+              "body": "",
+              "header": {},
+              "method": "GET",
+              "mock-result": {
+                "body": "",
+                "header": {},
+                "status-code": 200
+              },
+              "name": "Get Market Details",
+              "output-location": {
+                "__LDATA__": [
+                  "market_info"
+                ]
+              },
+              "query": {},
+              "timeout": 5000,
+              "url": {
+                "__LDATA__": [
+                  "market_url"
+                ]
+              },
+              "use-mock-result": false
+            },
+            {
+              "$action": "json/decode",
+              "json": {
+                "__LDATA__": [
+                  "market_info",
+                  "body"
+                ]
+              },
+              "name": "Decode Market Detail JSON",
+              "output-location": {
+                "__$afref__": "data",
+                "path": [
+                  "value"
+                ]
+              }
+            }
+          ],
+          "index-location": {
+            "__$afref__": "data",
+            "path": [
+              "index"
+            ]
+          },
+          "output-location": {
+            "__$afref__": "data",
+            "path": [
+              "result"
+            ]
+          },
+          "value-location": {
+            "__$afref__": "data",
+            "path": [
+              "value"
+            ]
+          }
+        },
+        {
+          "$action": "data/set",
+          "at-location": {
+            "__$afref__": "data",
+            "path": [
+              "response",
+              "body"
+            ]
+          },
+          "value": {
+            "__$afref__": "data",
+            "path": [
+              "result"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "1c17bed9-b54c-4582-b6cb-304536926e18",
+      "meta": {
+        "index": [
+          "inbound",
+          "a8c1e9bc-1ad2-41ab-b44f-c5beca0a74aa"
+        ]
+      },
+      "value": [
+        {
+          "$action": "string/join",
+          "array": [
+            "https://search.ams.usda.gov/farmersmarkets/v1/data.svc/mktDetail?id=",
+            {
+              "__$afref__": "data",
+              "path": [
+                "request",
+                "query",
+                "id"
+              ]
+            }
+          ],
+          "name": "Prep URL with Variable market ID",
+          "output-location": {
+            "__LDATA__": [
+              "market_url"
+            ]
+          },
+          "separator": ""
+        },
+        {
+          "$action": "communication/http-request",
+          "body": "",
+          "header": {},
+          "method": "GET",
+          "mock-result": {
+            "body": "",
+            "header": {},
+            "status-code": 200
+          },
+          "name": "Get Market Details",
+          "output-location": {
+            "__LDATA__": [
+              "market_info"
+            ]
+          },
+          "query": {},
+          "timeout": 5000,
+          "url": {
+            "__LDATA__": [
+              "market_url"
+            ]
+          },
+          "use-mock-result": false
+        },
+        {
+          "$action": "data/set",
+          "at-location": {
+            "__$afref__": "data",
+            "path": [
+              "response",
+              "body"
+            ]
+          },
+          "value": {
+            "__$afref__": "data",
+            "path": [
+              "market_info",
+              "body"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "c46f6c13-395c-4ec3-a154-181a095e7436",
+      "meta": {
+        "index": [
+          "inbound",
+          "a8c1e9bc-1ad2-41ab-b44f-c5beca0a74aa"
+        ]
+      },
+      "value": [
+        {
+          "$action": "string/join",
+          "array": [
+            "https://search.ams.usda.gov/farmersmarkets/v1/data.svc/zipSearch?zip=",
+            {
+              "__LDATA__": [
+                "request",
+                "query",
+                "zip"
+              ]
+            }
+          ],
+          "output-location": {
+            "__LDATA__": [
+              "url_market_list"
+            ]
+          },
+          "separator": ""
+        },
+        {
+          "$action": "communication/http-request",
+          "body": "",
+          "header": {},
+          "method": "GET",
+          "mock-result": {
+            "body": "",
+            "header": {},
+            "status-code": 200
+          },
+          "name": "Get market list",
+          "output-location": {
+            "__$afref__": "data",
+            "path": [
+              "response",
+              "body"
+            ]
+          },
+          "query": {},
+          "timeout": 5000,
+          "url": {
+            "__LDATA__": [
+              "url_market_list"
+            ]
+          },
+          "use-mock-result": false
+        },
+        {
+          "$action": "data/set",
+          "at-location": {
+            "__$afref__": "data",
+            "path": [
+              "response",
+              "body"
+            ]
+          },
+          "value": {
+            "__$afref__": "data",
+            "path": [
+              "response",
+              "body",
+              "body"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "InboundEndpointTest": [
+    {
+      "id": "ef3fd576-bac4-4f20-b255-10b41b63e694",
+      "meta": {
+        "index": [
+          "inbound",
+          "a8c1e9bc-1ad2-41ab-b44f-c5beca0a74aa",
+          "endpoint",
+          "72df78a6-5da9-4642-a4dc-d6037a4da75b"
+        ]
+      },
+      "value": {
+        "name": "default-test-input",
+        "request": {
+          "body": "",
+          "header": {},
+          "path": {},
+          "query": {
+            "zip": "95070"
+          }
+        }
+      }
+    },
+    {
+      "id": "4ae028d1-3062-4fa4-922a-f342d0795480",
+      "meta": {
+        "index": [
+          "inbound",
+          "a8c1e9bc-1ad2-41ab-b44f-c5beca0a74aa",
+          "endpoint",
+          "1c17bed9-b54c-4582-b6cb-304536926e18"
+        ]
+      },
+      "value": {
+        "name": "default-test-input",
+        "request": {
+          "body": "",
+          "header": {},
+          "path": {},
+          "query": {
+            "id": "1020186"
+          }
+        }
+      }
+    },
+    {
+      "id": "aae90200-c870-4a13-8a3b-b4c09f446258",
+      "meta": {
+        "index": [
+          "inbound",
+          "a8c1e9bc-1ad2-41ab-b44f-c5beca0a74aa",
+          "endpoint",
+          "05bd1909-8949-456d-ab18-ea5fa5ce1597"
+        ]
+      },
+      "value": {
+        "name": "default-test-input",
+        "request": {
+          "body": "",
+          "header": {},
+          "path": {},
+          "query": {
+            "zip": "94089"
+          }
+        }
+      }
+    },
+    {
+      "id": "86b01cc4-10a3-461e-a695-58fa7ea71d32",
+      "meta": {
+        "index": [
+          "inbound",
+          "a8c1e9bc-1ad2-41ab-b44f-c5beca0a74aa",
+          "endpoint",
+          "c46f6c13-395c-4ec3-a154-181a095e7436"
+        ]
+      },
+      "value": {
+        "name": "default-test-input",
+        "request": {
+          "body": "",
+          "header": {},
+          "path": {},
+          "query": {
+            "zip": "95070"
+          }
+        }
+      }
+    }
+  ]
+}
