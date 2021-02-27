@@ -7,6 +7,21 @@
   <style>
     body {
       font-family: Arial;
+      font-size: 1em;
+    }
+
+    p {
+      white-space: pre-line;
+      margin-bottom: 0rem;
+    }
+
+    button {
+      min-width: 150px;
+      margin: 0 5px;
+    }
+
+    input {
+      width: 100px;
     }
 
     .split {
@@ -28,37 +43,72 @@
       width: 60%;
     }
 
-    p {
-      white-space: pre-line;
-    }
-    button{
-      min-width: 250px;
+    .sections {
+      margin-top: 25px;
     }
   </style>
 </head>
 
 <body>
-
   <div class="split left">
-      <p>Search the nearest Farmers Market</p>
-      <input value="94089" id="get-correlated-list-input" type="text" name="name" placeholder="US Zip Code such as 94089" required></input><br />
-      <button type="button" onclick="getData('correlated-filtered', 'zip')">View Correlated + Filtered Data</button>
-
-      <button type="button" onclick="getCorrelatedFilteredTable('correlated-filtered', 'zip')">View Correlated + Filtered Data</button><br />
-      <button type="button" onclick="getData('correlated', 'zip')">View Correlated Data</button>
-      <button type="button" onclick="getCorrelatedTable('correlated', 'zip')">View Correlated Data</button><br />
-      <button type="button" onclick="getData('raw', 'zip')">View Raw Data (Market ID Only)</button>
-      <button type="button" onclick="getRawTable('raw', 'zip')">View Raw Data (Market ID Only)</button>
-      <p>View Raw Data (Detailed information about a Market)</p>
+    <img style="height:60px;" src="https://interactor.com/autoflow/wp-content/uploads/sites/2/2020/12/autoflow-logo.png" alt="API AutoFlow" />
+    <p>This solution demonstrates utilization of Data.gov data with API AutoFlow no-code data integration platform.</p>
+    <p><strong>Development time</strong>: 1.5 hours</p>
+    <div class="sections">
+      <h5>GET Farmers market ID</h5>
+      <p>First API is to get the ID for each farmers market in the region.</p>
+      <p><strong>Endpoint</strong>: <code>/zipSearch?zip={zipcode}</code></p>
+      <input value="94089" id="get-raw-list-input" type="text" name="name" placeholder="US Zip Code such as 94089" required></input>
+      <button type="button" onclick="getData('raw', 'zip', 'raw')">View Raw JSON</button>
+      <button type="button" onclick="getRawTable('raw', 'zip')">View in Table</button>
+    </div>
+    <div class="sections">
+      <h5>GET Detail about ONE of the market</h5>
+      <p>Second API is to get the details about each farmers market.</p>
+      <p><strong>Endpoint</strong>: <code>/mktDetail?id={marketId}</code></p>
       <input value="1020184" id="get-details-input" type="text" name="name" placeholder="Market ID such as 1020185" required></input>
-      <button type="button" onclick="getData('detail', 'id')">View Raw Data (Detailed information about a Market)</button>
+      <button type="button" onclick="getData('detail', 'id', 'detail')">View Raw JSON</button>
+    </div>
+    <div class="sections">
+      <h5>GET Details on EACH market</h5>
+      <p>Now that you have the IDs for each farmers market<br />You can iterate over each ID and get the details for each farmers market.</p>
+      <input value="94089" id="get-correlated-list-input" type="text" name="name" placeholder="US Zip Code such as 94089" required></input>
+      <button type="button" onclick="getData('correlated', 'zip', 'correlated')">View Raw JSON</button>
+      <button type="button" onclick="getCorrelatedTable('correlated', 'zip')">View in Table</button>
+    </div>
+    <div class="sections">
+      <h5>FILTER and Transform Data</h5>
+      <p>Finally for my app, I just want the Name, Address, and Distance<br />You can create a new object retrieving just the data you need from both APIs</p>
+      <input value="94089" id="get-correlated-filtered-list-input" type="text" name="name" placeholder="US Zip Code such as 94089" required></input>
+      <button type="button" onclick="getData('correlated-filtered', 'zip', 'correlatedFiltered')">View Raw JSON</button>
+      <button type="button" onclick="getCorrelatedFilteredTable('correlated-filtered', 'zip')">View in Table</button>
+    </div>
+
   </div>
 
   <div class="split right">
-      <p id="loading"></p>
-      <pre id="result"></pre>
-      <table id="tbody" class="table">
-      </table>
+    <h3>Use Data.gov APIs and data without coding</h3>
+    <p><strong>Farmers market directory API Server</strong>: https://search.ams.usda.gov/farmersmarkets/v1/data.svc</p>
+    <table>
+      <td style="width:50%">
+        <img style="height:35px;" src="https://www.data.gov/app/themes/roots-nextdatagov/assets/img/logo.svg" alt="Data.gov" />
+        <p>Data.gov is a repository of all US Government produced or commissioned data</p>
+      </td>
+      <td style="width:50%">
+        <img style="height:35px;" src="https://www.nrcs.usda.gov/NRCS_WIDTheme/themes/html/NRCS_WIDTheme/images/USDA-Logo.jpg" alt="USDA" />
+        <p>Open data is from USDA's nationwide farmer's market database provided in JSON and XML formats</p>
+      </td>
+    </table>
+
+    <div class="sections">
+      <h5><img src="cloud-download-fill.svg" /> Downlaod the Solution</h5>
+      <p>Copy the entire solution from GitHub and create your own. Instructions included</p>
+      <a href="https://github.com/API-AutoFlow/farmersmarketdirectory" target="_blank">https://github.com/API-AutoFlow/farmersmarketdirectory</a>
+    </div>
+    <p id="loading"></p>
+    <pre id="result"><p style="margin: 15% 25%">The result may take a few seconds to load from data.gov.</p></pre>
+    <table id="tbody" class="table"></table>
+
   </div>
   </div>
 </body>
@@ -67,14 +117,28 @@
 
 <script>
   var baseUrl = "http://localhost:1111"
-
-
-
   /* JSON Output */
-  function getData(uri, queryType) {
-    document.getElementById("tbody", "result").innerHTML = "";
-    var zipcode = document.getElementById("get-correlated-list-input").value;
-    var id = document.getElementById("get-details-input").value;
+  function getData(uri, queryType, getInput) {
+    document.getElementById("tbody").innerHTML = "";
+    document.getElementById("result").innerHTML = "";
+    var getInputValue = getInput;
+    switch (getInputValue) {
+      case 'raw':
+        console.log('raw');
+        var queryValue = document.getElementById("get-raw-list-input").value;
+        break;
+      case 'detail':
+        var queryValue = document.getElementById("get-details-input").value;
+        break;
+      case 'correlated':
+        var queryValue = document.getElementById("get-correlated-list-input").value;
+        break;
+      case 'correlatedFiltered':
+        var queryValue = document.getElementById("get-correlated-filtered-list-input").value;
+        break;
+      default:
+        document.getElementById("result").innerHTML = "Sorry error has occurred";
+    }
     xhr.onreadystatechange = function() {
       var data = JSON.parse(this.responseText);
       if (this.readyState == 4 && this.status == 200) {
@@ -84,17 +148,14 @@
         document.getElementById("loading").innerHTML = "Loading...";
       }
     };
-    if (zipcode.length >= 0) {
-      xhr.open("GET", baseUrl + "/" + uri + "?" + queryType + "=" + zipcode, true);
-    } else {
-      xhr.open("GET", baseUrl + "/" + uri + "?" + queryType + "=" + +id, true);
-    }
+    xhr.open("GET", baseUrl + "/" + uri + "?" + queryType + "=" + queryValue, true);
     xhr.send();
   }
 
   /* Tables Output */
   function getCorrelatedFilteredTable(uri, queryType) {
-    document.getElementById("tbody", "result").innerHTML = "";
+    document.getElementById("tbody").innerHTML = "";
+    document.getElementById("result").innerHTML = "";
     var zipcode = document.getElementById("get-correlated-list-input").value;
     xhr.onreadystatechange = function() {
       // console.log(this.responseText);
@@ -127,7 +188,8 @@
   }
 
   function getCorrelatedTable(uri, queryType) {
-    document.getElementById("tbody", "result").innerHTML = "";
+    document.getElementById("tbody").innerHTML = "";
+    document.getElementById("result").innerHTML = "";
     var zipcode = document.getElementById("get-correlated-list-input").value;
     xhr.onreadystatechange = function() {
       // console.log(this.responseText);
@@ -161,7 +223,8 @@
   }
 
   function getRawTable(uri, queryType) {
-    document.getElementById("tbody", "result").innerHTML = "";
+    document.getElementById("tbody").innerHTML = "";
+    document.getElementById("result").innerHTML = "";
     var zipcode = document.getElementById("get-correlated-list-input").value;
     xhr.onreadystatechange = function() {
       // console.log(this.responseText);
