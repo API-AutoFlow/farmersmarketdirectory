@@ -55,7 +55,7 @@
     <p>This solution demonstrates utilization of Data.gov data with API AutoFlow no-code data integration platform.</p>
     <p><strong>Development time</strong>: 1.5 hours</p>
     <div class="sections">
-      <h5>GET Farmers market ID</h5>
+      <h5>1. GET Farmers market ID</h5>
       <p>First API is to get the ID for each farmers market in the region.</p>
       <p><strong>Endpoint</strong>: <code>/zipSearch?zip={zipcode}</code></p>
       <input value="94089" id="get-raw-list-input" type="text" name="name" placeholder="US Zip Code such as 94089" required></input>
@@ -63,21 +63,21 @@
       <button type="button" onclick="getRawTable('raw', 'zip')">View in Table</button>
     </div>
     <div class="sections">
-      <h5>GET Detail about ONE of the market</h5>
+      <h5>2. GET Detail about ONE of the market</h5>
       <p>Second API is to get the details about each farmers market.</p>
       <p><strong>Endpoint</strong>: <code>/mktDetail?id={marketId}</code></p>
       <input value="1020184" id="get-details-input" type="text" name="name" placeholder="Market ID such as 1020185" required></input>
       <button type="button" onclick="getData('detail', 'id', 'detail')">View Raw JSON</button>
     </div>
     <div class="sections">
-      <h5>GET Details on EACH market</h5>
+      <h5>3. GET Details on EACH market</h5>
       <p>Now that you have the IDs for each farmers market<br />You can iterate over each ID and get the details for each farmers market.</p>
       <input value="94089" id="get-correlated-list-input" type="text" name="name" placeholder="US Zip Code such as 94089" required></input>
       <button type="button" onclick="getData('correlated', 'zip', 'correlated')">View Raw JSON</button>
       <button type="button" onclick="getCorrelatedTable('correlated', 'zip')">View in Table</button>
     </div>
     <div class="sections">
-      <h5>FILTER and Transform Data</h5>
+      <h5><strong>Complete</strong>: FILTER and Transform Data</h5>
       <p>Finally for my app, I just want the Name, Address, and Distance<br />You can create a new object retrieving just the data you need from both APIs</p>
       <input value="94089" id="get-correlated-filtered-list-input" type="text" name="name" placeholder="US Zip Code such as 94089" required></input>
       <button type="button" onclick="getData('correlated-filtered', 'zip', 'correlatedFiltered')">View Raw JSON</button>
