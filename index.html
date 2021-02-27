@@ -51,7 +51,7 @@
 
 <body>
   <div class="split left">
-    <img style="height:60px;" src="https://interactor.com/autoflow/wp-content/uploads/sites/2/2020/12/autoflow-logo.png" alt="API AutoFlow" />
+    <a href="https://www.interactor.com"><img style="height:60px;" src="https://interactor.com/autoflow/wp-content/uploads/sites/2/2020/12/autoflow-logo.png" alt="API AutoFlow" /></a>
     <p>This solution demonstrates utilization of Data.gov data with API AutoFlow no-code data integration platform.</p>
     <p><strong>Development time</strong>: 1.5 hours</p>
     <div class="sections">
@@ -92,19 +92,21 @@
     <table>
       <td style="width:50%">
         <img style="height:35px;" src="https://www.data.gov/app/themes/roots-nextdatagov/assets/img/logo.svg" alt="Data.gov" />
-        <p>Data.gov is a repository of all US Government produced or commissioned data</p>
+        <p style="padding:10px 10px 10px 0">Data.gov is a repository of all US Government produced or commissioned data</p>
       </td>
       <td style="width:50%">
         <img style="height:35px;" src="https://www.nrcs.usda.gov/NRCS_WIDTheme/themes/html/NRCS_WIDTheme/images/USDA-Logo.jpg" alt="USDA" />
-        <p>Open data is from USDA's nationwide farmer's market database provided in JSON and XML formats</p>
+        <p style="padding:10px 10px 10px 0">Open data is from USDA's nationwide farmr's market database provided in JSON and XML formats</p>
       </td>
     </table>
+    <span style="display: inline-block; margin-right:100px;">
+      <a href="https://interactor.com/autoflow/download/" target="_blank"><h5 style="text-align: center; background-color: black; padding: 5px 25px 5px 5px; color: white"><img style="margin-right:5px;" src="cloud-download-fill.svg" /> Download API AutoFlow</h5></a>
 
-    <div class="sections">
-      <h5><img src="cloud-download-fill.svg" /> Downlaod the Solution</h5>
-      <p>Copy the entire solution from GitHub and create your own. Instructions included</p>
-      <a href="https://github.com/API-AutoFlow/farmersmarketdirectory" target="_blank">https://github.com/API-AutoFlow/farmersmarketdirectory</a>
-    </div>
+
+    </span>
+    <span style="display: inline-block; margin-right:100px;" >
+    <a href="https://github.com/API-AutoFlow/farmersmarketdirectory" target="_blank"><h5 style="text-align: center; background-color: black; padding: 5px 25px 5px 5px; color: white"><img style="margin-right:10px;" src="cloud-download-fill.svg" />Download the Solution</h5></a>
+    </span>
     <p id="loading"></p>
     <pre id="result"><p style="margin: 15% 25%">The result may take a few seconds to load from data.gov.</p></pre>
     <table id="tbody" class="table"></table>
@@ -119,7 +121,7 @@
   // Change the baseURL to localhost
   // var baseUrl = "http://localhost:2000"
   var baseUrl = "https://www.interactor.com:2000"
-  
+
   /* JSON Output */
   function getData(uri, queryType, getInput) {
     document.getElementById("tbody").innerHTML = "";
